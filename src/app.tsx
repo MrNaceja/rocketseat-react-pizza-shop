@@ -1,7 +1,7 @@
 export function App() {
   return (
     <>
-    <h1>Pizza Shop</h1>
+      <h1 className="flex items-center justify-around">Pizza Shop</h1>
     </>
   )
 }
