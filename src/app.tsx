@@ -1,3 +1,5 @@
+import { createHead, UnheadProvider } from '@unhead/react/client'
+import type { PropsWithChildren } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 
 import { AppLayout } from '@/pages/app/_layout'
@@ -5,17 +7,33 @@ import { DashboardPage } from '@/pages/app/dashboard'
 import { AuthLayout } from '@/pages/auth/_layout'
 import { SignInPage } from '@/pages/auth/sign-in'
 
+const head = createHead({
+  init: [
+    {
+      titleTemplate: '%s | Pizza Shop',
+    },
+  ],
+})
+
 export function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route element={<AppLayout />}>
-          <Route path="/" element={<DashboardPage />} index />
-        </Route>
-        <Route element={<AuthLayout />}>
-          <Route path="/sign-in" element={<SignInPage />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <Providers>
+      <Route element={<AppLayout />}>
+        <Route path="/" element={<DashboardPage />} index />
+      </Route>
+      <Route element={<AuthLayout />}>
+        <Route path="/sign-in" element={<SignInPage />} />
+      </Route>
+    </Providers>
+  )
+}
+
+function Providers({ children }: PropsWithChildren) {
+  return (
+    <UnheadProvider head={head}>
+      <BrowserRouter>
+        <Routes>{children}</Routes>
+      </BrowserRouter>
+    </UnheadProvider>
   )
 }

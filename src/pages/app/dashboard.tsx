@@ -1,3 +1,13 @@
+import { useHead } from '@unhead/react'
+
 export function DashboardPage() {
-  return <h1>Dashboard</h1>
+  useHead({
+    title: 'Dashboard',
+  })
+
+  return (
+    <>
+      <h1>Dashboard</h1>
+    </>
+  )
 }
