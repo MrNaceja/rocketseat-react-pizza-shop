@@ -1,6 +1,7 @@
 import { createHead, UnheadProvider } from '@unhead/react/client'
 import type { PropsWithChildren } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
+import { Toaster } from 'sonner'
 
 import { AppLayout } from '@/pages/app/_layout'
 import { DashboardPage } from '@/pages/app/dashboard'
@@ -31,6 +32,7 @@ export function App() {
 function Providers({ children }: PropsWithChildren) {
   return (
     <UnheadProvider head={head}>
+      <Toaster richColors />
       <BrowserRouter>
         <Routes>{children}</Routes>
       </BrowserRouter>
