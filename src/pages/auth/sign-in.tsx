@@ -1,6 +1,8 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useHead } from '@unhead/react'
 import { useCallback } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
+import { Link } from 'react-router'
 import { toast } from 'sonner'
 import z4 from 'zod/v4'
 
@@ -9,7 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 const signInFormSchema = z4.object({
-  email: z4.email(),
+  email: z4.email('Email é obrigatório.'),
 })
 
 type SignInForm = z4.infer<typeof signInFormSchema>
@@ -20,9 +22,7 @@ export function SignInPage() {
   })
 
   const signInForm = useForm<SignInForm>({
-    defaultValues: {
-      email: '',
-    },
+    resolver: zodResolver(signInFormSchema),
   })
 
   const handleAccessPainel = useCallback<SubmitHandler<SignInForm>>(
@@ -62,6 +62,14 @@ export function SignInPage() {
             Acessar Painel
           </Button>
         </form>
+
+        <span className="before:bg-border relative grid w-full place-items-center before:absolute before:top-1/2 before:-z-[1] before:h-[1px] before:w-full">
+          <span className="text-muted-foreground bg-background px-2">ou</span>
+        </span>
+
+        <Button asChild variant="outline">
+          <Link to="/sign-up">Criar conta grátis</Link>
+        </Button>
       </div>
     </div>
   )

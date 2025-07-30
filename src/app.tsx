@@ -7,6 +7,7 @@ import { AppLayout } from '@/pages/app/_layout'
 import { DashboardPage } from '@/pages/app/dashboard'
 import { AuthLayout } from '@/pages/auth/_layout'
 import { SignInPage } from '@/pages/auth/sign-in'
+import { SignUpPage } from '@/pages/auth/sign-up'
 
 const head = createHead({
   init: [
@@ -24,6 +25,7 @@ export function App() {
       </Route>
       <Route element={<AuthLayout />}>
         <Route path="/sign-in" element={<SignInPage />} />
+        <Route path="/sign-up" element={<SignUpPage />} />
       </Route>
     </Providers>
   )
