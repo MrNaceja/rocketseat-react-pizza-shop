@@ -1,10 +1,12 @@
 import { Outlet } from 'react-router'
 
+import { Header } from '@/pages/app/layout/header'
+
 export function AppLayout() {
   return (
-    <div>
-      <h1>Layout App</h1>
+    <section>
+      <Header />
       <Outlet />
-    </div>
+    </section>
   )
 }

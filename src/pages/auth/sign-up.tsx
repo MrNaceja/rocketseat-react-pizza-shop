@@ -9,6 +9,7 @@ import z4 from 'zod/v4'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 
 const signUpFormSchema = z4.object({
   restaurantName: z4.string().nonempty('Nome do restaurante é obrigatório.'),
@@ -110,9 +111,7 @@ export function SignUpPage() {
           </Button>
         </form>
 
-        <span className="before:bg-border relative grid w-full place-items-center before:absolute before:top-1/2 before:-z-[1] before:h-[1px] before:w-full">
-          <span className="text-muted-foreground bg-background px-2">ou</span>
-        </span>
+        <Separator label="ou" />
 
         <Button asChild variant="outline">
           <Link to="/sign-in">Acesse o painel</Link>

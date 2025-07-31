@@ -3,11 +3,12 @@ import type { PropsWithChildren } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
 import { Toaster } from 'sonner'
 
-import { AppLayout } from '@/pages/app/_layout'
 import { DashboardPage } from '@/pages/app/dashboard'
-import { AuthLayout } from '@/pages/auth/_layout'
+import { AppLayout } from '@/pages/app/layout'
+import { AuthLayout } from '@/pages/auth/layout'
 import { SignInPage } from '@/pages/auth/sign-in'
 import { SignUpPage } from '@/pages/auth/sign-up'
+import { ThemeProvider } from '@/providers/theme/provider'
 
 const head = createHead({
   init: [
@@ -34,10 +35,12 @@ export function App() {
 function Providers({ children }: PropsWithChildren) {
   return (
     <UnheadProvider head={head}>
-      <Toaster richColors />
-      <BrowserRouter>
-        <Routes>{children}</Routes>
-      </BrowserRouter>
+      <ThemeProvider defaultTheme="dark">
+        <Toaster richColors />
+        <BrowserRouter>
+          <Routes>{children}</Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </UnheadProvider>
   )
 }
