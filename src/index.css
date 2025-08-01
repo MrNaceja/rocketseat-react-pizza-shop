@@ -74,6 +74,8 @@
   --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
   --sidebar-border: oklch(0.92 0.004 286.32);
   --sidebar-ring: oklch(0.795 0.184 86.047);
+
+  --font-sans: "Roboto", sans-serif;
 }
 
 .dark {
