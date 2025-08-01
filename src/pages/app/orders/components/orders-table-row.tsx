@@ -2,21 +2,26 @@ import { ArrowRight, Search, X } from 'lucide-react'
 
 import { Button } from '@/components/button'
 import { TableCell, TableRow } from '@/components/table'
+import { OrderDetailsDialog } from '@/pages/app/orders/components/order-details-dialog'
 
 export function OrdersTableRow() {
   return (
     <TableRow>
       <TableCell>
-        <Button size="icon" variant="outline">
-          <Search className="size-3.5" />
-          <span className="sr-only">Detalhes do Pedido</span>
-        </Button>
+        <OrderDetailsDialog>
+          <Button size="icon" variant="outline">
+            <Search className="size-3.5" />
+            <span className="sr-only">Detalhes do Pedido</span>
+          </Button>
+        </OrderDetailsDialog>
       </TableCell>
       <TableCell>sdalfhsdoufhsodlfjçsdlfksdf</TableCell>
       <TableCell>há 15 minutos</TableCell>
-      <TableCell className="space-x-2">
-        <span className="bg-muted inline-block size-2.5 rounded-full" />
-        <span>Pendente</span>
+      <TableCell>
+        <div className="flex items-center gap-2">
+          <span className="bg-muted inline-block size-2.5 rounded-full" />
+          <span>Pendente</span>
+        </div>
       </TableCell>
       <TableCell>Eduardo Narcizo Neto Toriani</TableCell>
       <TableCell>R$ 149.90</TableCell>

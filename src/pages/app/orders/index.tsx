@@ -22,7 +22,6 @@ export function OrdersPage() {
 
       <main className="flex flex-col gap-6">
         <OrdersFilters />
-
         <article className="rounded-md border">
           <Table>
             <TableHeader>
@@ -51,7 +50,7 @@ export function OrdersPage() {
               ))}
             </TableBody>
           </Table>
-          <footer className="p-3">
+          <footer className="border-t p-3">
             <PaginationControl
               currentPageIndex={0}
               recordsTotal={10}
