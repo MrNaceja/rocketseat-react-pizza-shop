@@ -2,8 +2,8 @@ import { ChevronDown, Home, Pizza, UtensilsCrossed } from 'lucide-react'
 
 import { Button } from '@/components/button'
 import { Separator } from '@/components/separator'
-import { AccountMenu } from '@/pages/app/layout/account-menu'
-import { NavLink } from '@/pages/app/layout/nav-link'
+import { AccountMenu } from '@/pages/app/_layout/account-menu'
+import { NavLink } from '@/pages/app/_layout/nav-link'
 import { ThemeToggle } from '@/providers/theme/toggle'
 
 export function Header() {
