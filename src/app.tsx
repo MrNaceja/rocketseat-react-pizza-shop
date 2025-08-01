@@ -5,6 +5,7 @@ import { Toaster } from 'sonner'
 
 import { DashboardPage } from '@/pages/app/dashboard'
 import { AppLayout } from '@/pages/app/layout'
+import { OrdersPage } from '@/pages/app/orders'
 import { AuthLayout } from '@/pages/auth/layout'
 import { SignInPage } from '@/pages/auth/sign-in'
 import { SignUpPage } from '@/pages/auth/sign-up'
@@ -23,6 +24,7 @@ export function App() {
     <Providers>
       <Route element={<AppLayout />}>
         <Route path="/" element={<DashboardPage />} index />
+        <Route path="/orders" element={<OrdersPage />} />
       </Route>
       <Route element={<AuthLayout />}>
         <Route path="/sign-in" element={<SignInPage />} />

@@ -1,6 +1,6 @@
-import { Building, ChevronDown, LogOut } from 'lucide-react'
+import { Building, LogOut } from 'lucide-react'
+import type { PropsWithChildren } from 'react'
 
-import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,17 +8,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
+} from '@/components/dropdown-menu'
 
-export function AccountMenu() {
+export function AccountMenu({ children: trigger }: PropsWithChildren) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="group">
-          <span>Nome do Restaurante</span>
-          <ChevronDown className="size-5 transition duration-200 group-data-[state=open]:-rotate-180" />
-        </Button>
-      </DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-56">
         <DropdownMenuLabel className="flex flex-col">
           <span className="text-foreground font-bold">Nome do Usuário</span>
@@ -29,7 +24,7 @@ export function AccountMenu() {
           <Building />
           <span>Perfil da Loja</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem variant="destructive">
           <LogOut className="text-destructive" />
           <span className="text-destructive">Sair</span>
         </DropdownMenuItem>

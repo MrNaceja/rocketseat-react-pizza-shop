@@ -1,6 +1,6 @@
 import { Link, type LinkProps, useLocation } from 'react-router'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/button'
 
 export function NavLink(props: LinkProps) {
   const { pathname } = useLocation()

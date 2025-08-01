@@ -1,6 +1,7 @@
-import { Home, Pizza, UtensilsCrossed } from 'lucide-react'
+import { ChevronDown, Home, Pizza, UtensilsCrossed } from 'lucide-react'
 
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/button'
+import { Separator } from '@/components/separator'
 import { AccountMenu } from '@/pages/app/layout/account-menu'
 import { NavLink } from '@/pages/app/layout/nav-link'
 import { ThemeToggle } from '@/providers/theme/toggle'
@@ -36,7 +37,12 @@ export function Header() {
 
       <aside className="ml-auto flex items-center gap-3">
         <ThemeToggle />
-        <AccountMenu />
+        <AccountMenu>
+          <Button variant="outline" className="group">
+            <span>Nome do Restaurante</span>
+            <ChevronDown className="size-5 transition duration-200 group-data-[state=open]:-rotate-180" />
+          </Button>
+        </AccountMenu>
       </aside>
     </header>
   )

@@ -6,10 +6,10 @@ import { Link } from 'react-router'
 import { toast } from 'sonner'
 import z4 from 'zod/v4'
 
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/button'
+import { Input } from '@/components/input'
+import { Label } from '@/components/label'
+import { Separator } from '@/components/separator'
 
 const signInFormSchema = z4.object({
   email: z4.email('Email é obrigatório.'),
