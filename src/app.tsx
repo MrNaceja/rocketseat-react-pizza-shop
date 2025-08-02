@@ -1,8 +1,9 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { createHead, UnheadProvider } from '@unhead/react/client'
 import type { PropsWithChildren } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router'
-import { Toaster } from 'sonner'
 
+import { Toaster } from '@/components/sonner'
 import { AppLayout } from '@/pages/app/_layout'
 import { DashboardPage } from '@/pages/app/dashboard'
 import { OrdersPage } from '@/pages/app/orders'
@@ -19,6 +20,8 @@ const head = createHead({
     },
   ],
 })
+
+const queryClient = new QueryClient()
 
 export function App() {
   return (
@@ -40,10 +43,12 @@ function Providers({ children }: PropsWithChildren) {
   return (
     <UnheadProvider head={head}>
       <ThemeProvider defaultTheme="dark">
-        <Toaster richColors />
-        <BrowserRouter>
-          <Routes>{children}</Routes>
-        </BrowserRouter>
+        <QueryClientProvider client={queryClient}>
+          <Toaster richColors />
+          <BrowserRouter>
+            <Routes>{children}</Routes>
+          </BrowserRouter>
+        </QueryClientProvider>
       </ThemeProvider>
     </UnheadProvider>
   )
