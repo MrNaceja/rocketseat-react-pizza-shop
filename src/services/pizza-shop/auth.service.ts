@@ -1,29 +1,26 @@
-import { isAxiosError } from 'axios'
-
 import { api } from '@/services/pizza-shop/api'
-
-class UnauthorizedError extends Error {
-  constructor() {
-    super('Usuário não autorizado!')
-    this.name = 'UnauthorizedError'
-  }
-}
 
 type SignInPayload = {
   email: string
 }
+
+type SignUpPayload = {
+  restaurantName: string
+  managerName: string
+  email: string
+  phone: string
+}
+
 export const AuthService = {
   async signIn({ email }: SignInPayload) {
-    try {
-      await api.post('/authenticate', { email })
-    } catch (e) {
-      if (isAxiosError(e)) {
-        if (e.response?.data.code === 'UNAUTHORIZED') {
-          throw new UnauthorizedError()
-        }
-      }
-      throw e
-    }
+    await api.post('/authenticate', { email })
   },
-  async signUp() {},
+  async signUp({ restaurantName, managerName, email, phone }: SignUpPayload) {
+    await api.post('/restaurants', {
+      restaurantName,
+      managerName,
+      email,
+      phone,
+    })
+  },
 }

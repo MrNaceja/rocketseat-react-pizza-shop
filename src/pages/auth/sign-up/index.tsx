@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { useHead } from '@unhead/react'
 import { useCallback, useEffect } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
@@ -10,6 +11,7 @@ import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Label } from '@/components/label'
 import { Separator } from '@/components/separator'
+import { AuthService } from '@/services/pizza-shop/auth.service'
 
 const signUpFormSchema = z4.object({
   restaurantName: z4.string().nonempty('Nome do restaurante é obrigatório.'),
@@ -25,6 +27,10 @@ export function SignUpPage() {
     title: 'Sign Up',
   })
 
+  const { mutateAsync: signUp } = useMutation({
+    mutationFn: AuthService.signUp,
+  })
+
   const navigate = useNavigate()
 
   const signUpForm = useForm<SignUpForm>({
@@ -32,17 +38,49 @@ export function SignUpPage() {
   })
 
   const handleRegister = useCallback<SubmitHandler<SignUpForm>>(
-    async ({ email }) => {
-      toast.success(`Cadastro finalizado para ${email}.`, {
-        action: {
-          label: 'Acessar painel',
-          onClick() {
-            navigate('/sign-in')
+    async ({ email, managerName, restaurantName, phone }) => {
+      await toast
+        .promise(
+          signUp({
+            email,
+            managerName,
+            restaurantName,
+            phone,
+          }),
+          {
+            loading: 'Aguarde, registrando seu restaurante...',
+            success: {
+              message: 'Restaurante registrado com sucesso!',
+              action: {
+                label: 'Realizar login',
+                onClick() {
+                  navigate(
+                    '/sign-in?' + new URLSearchParams({ email }).toString(),
+                  )
+                },
+              },
+            },
+            error(error) {
+              return {
+                message: error.message,
+                action: {
+                  label: 'Tentar novamente',
+                  onClick() {
+                    handleRegister({
+                      email,
+                      managerName,
+                      restaurantName,
+                      phone,
+                    })
+                  },
+                },
+              }
+            },
           },
-        },
-      })
+        )
+        .unwrap()
     },
-    [navigate],
+    [navigate, signUp],
   )
 
   useEffect(() => {

@@ -3,7 +3,7 @@ import { useMutation } from '@tanstack/react-query'
 import { useHead } from '@unhead/react'
 import { useCallback } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { toast } from 'sonner'
 import z4 from 'zod/v4'
 
@@ -24,12 +24,17 @@ export function SignInPage() {
     title: 'Sign In',
   })
 
+  const [searchParams] = useSearchParams()
+
   const { mutateAsync: signIn } = useMutation({
     mutationFn: AuthService.signIn,
   })
 
   const signInForm = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
+    defaultValues: {
+      email: searchParams.get('email') || '',
+    },
   })
 
   const handleAccessPainel = useCallback<SubmitHandler<SignInForm>>(
