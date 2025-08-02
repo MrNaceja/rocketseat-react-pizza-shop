@@ -9,6 +9,7 @@ import { OrdersPage } from '@/pages/app/orders'
 import { AuthLayout } from '@/pages/auth/_layout'
 import { SignInPage } from '@/pages/auth/sign-in'
 import { SignUpPage } from '@/pages/auth/sign-up'
+import { NotFoundPage } from '@/pages/not-found'
 import { ThemeProvider } from '@/providers/theme/provider'
 
 const head = createHead({
@@ -22,6 +23,7 @@ const head = createHead({
 export function App() {
   return (
     <Providers>
+      <Route path="*" element={<NotFoundPage />} />
       <Route element={<AppLayout />}>
         <Route path="/" element={<DashboardPage />} index />
         <Route path="/orders" element={<OrdersPage />} />
