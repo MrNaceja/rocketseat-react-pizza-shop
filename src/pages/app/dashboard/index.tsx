@@ -1,6 +1,7 @@
 import { useHead } from '@unhead/react'
 
 import { SummaryCards } from '@/pages/app/dashboard/components/summary-cards'
+import { SummaryCharts } from '@/pages/app/dashboard/components/summary-charts'
 
 export function DashboardPage() {
   useHead({
@@ -13,6 +14,7 @@ export function DashboardPage() {
 
       <main className="flex flex-col gap-6">
         <SummaryCards />
+        <SummaryCharts />
       </main>
     </div>
   )
