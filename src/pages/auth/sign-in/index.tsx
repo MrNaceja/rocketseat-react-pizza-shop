@@ -1,4 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
 import { useHead } from '@unhead/react'
 import { useCallback } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
@@ -10,6 +11,7 @@ import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Label } from '@/components/label'
 import { Separator } from '@/components/separator'
+import { AuthService } from '@/services/pizza-shop/auth.service'
 
 const signInFormSchema = z4.object({
   email: z4.email('Email é obrigatório.'),
@@ -22,15 +24,35 @@ export function SignInPage() {
     title: 'Sign In',
   })
 
+  const { mutateAsync: signIn } = useMutation({
+    mutationFn: AuthService.signIn,
+  })
+
   const signInForm = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
   })
 
   const handleAccessPainel = useCallback<SubmitHandler<SignInForm>>(
     async ({ email }) => {
-      toast.success(`Link mágico enviado para ${email}.`)
+      await toast
+        .promise(signIn({ email }), {
+          loading: 'Aguarde, enviando link de autenticação...',
+          success: `Enviamos um link de autenticação para o email ${email}.`,
+          error(error) {
+            return {
+              message: (error as Error).message,
+              action: {
+                label: 'Reenviar',
+                onClick() {
+                  handleAccessPainel({ email })
+                },
+              },
+            }
+          },
+        })
+        .unwrap()
     },
-    [],
+    [signIn],
   )
 
   return (
