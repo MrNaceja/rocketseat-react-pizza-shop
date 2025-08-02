@@ -9,15 +9,30 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/dropdown-menu'
+import { Skeleton } from '@/components/skeleton'
+import { useManagerProfile } from '@/hooks/use-manager-profile'
 
 export function AccountMenu({ children: trigger }: PropsWithChildren) {
+  const { profile, isLoading: isLoadingManagerProfile } = useManagerProfile()
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-56">
         <DropdownMenuLabel className="flex flex-col">
-          <span className="text-foreground font-bold">Nome do Usuário</span>
-          <sub className="text-muted-foreground text-xs">email@usuario.com</sub>
+          <span className="text-foreground font-bold">
+            {isLoadingManagerProfile ? (
+              <Skeleton className="h-4 w-32" />
+            ) : (
+              profile?.name
+            )}
+          </span>
+          <sub className="text-muted-foreground text-xs">
+            {isLoadingManagerProfile ? (
+              <Skeleton className="h-2 w-full" />
+            ) : (
+              profile?.email
+            )}
+          </sub>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuItem>

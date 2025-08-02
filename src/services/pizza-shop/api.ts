@@ -1,9 +1,11 @@
 import axios, { AxiosError } from 'axios'
 
 import { env } from '@/env'
+import { delay } from '@/lib/utils'
 
 export const api = axios.create({
   baseURL: env.VITE_PIZZA_SHOP_API_URL,
+  withCredentials: true,
 })
 
 type PizzaShopApiError = {
@@ -29,3 +31,10 @@ api.interceptors.response.use(
       ),
     ),
 )
+
+if (env.VITE_PIZZA_SHOP_API_DELAY) {
+  api.interceptors.request.use(async (config) => {
+    await delay(env.VITE_PIZZA_SHOP_API_DELAY)
+    return config
+  })
+}
