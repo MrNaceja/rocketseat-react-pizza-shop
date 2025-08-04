@@ -1,17 +1,69 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ArrowRight, Search, X } from 'lucide-react'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/button'
 import { TableCell, TableRow } from '@/components/table'
+import { ORDER_STATUS_CAN_CANCEL, OrderStatusEnum } from '@/lib/constants'
 import { Formatters } from '@/lib/formatters'
 import { OrderDetailsDialog } from '@/pages/app/orders/components/order-details-dialog'
 import { OrderStatusTag } from '@/pages/app/orders/components/order-status-tag'
+import {
+  type FetchPaginatedOrdersResult,
+  OrdersService,
+} from '@/services/pizza-shop/orders.service'
 
 interface OrdersTableRowProps {
   order: Order
 }
 export function OrdersTableRow({ order }: OrdersTableRowProps) {
+  const queryClient = useQueryClient()
   const [isDetailsDialogOpened, setIsDetailsDialogOpened] = useState(false)
+
+  const isStatusCanCancel = ORDER_STATUS_CAN_CANCEL.includes(order.status)
+
+  const cancelOrderMutation = useMutation({
+    mutationFn: OrdersService.cancelOrder,
+    onSuccess() {
+      const paginatedOrdersCached =
+        queryClient.getQueriesData<FetchPaginatedOrdersResult>({
+          queryKey: ['paginated-orders'],
+        })
+
+      if (paginatedOrdersCached) {
+        paginatedOrdersCached.forEach(
+          ([paginatedOrdersCacheKey, paginatedOrdersCacheData]) => {
+            if (paginatedOrdersCacheData) {
+              queryClient.setQueryData(paginatedOrdersCacheKey, {
+                ...paginatedOrdersCacheData,
+                orders: paginatedOrdersCacheData.orders.map((orderCached) => ({
+                  ...orderCached,
+                  status:
+                    orderCached.orderId === order.orderId
+                      ? OrderStatusEnum.canceled
+                      : order.status,
+                })),
+              })
+            }
+          },
+        )
+      }
+    },
+  })
+
+  const handleCancelOrder = useCallback(() => {
+    toast.promise(cancelOrderMutation.mutateAsync({ orderId: order.orderId }), {
+      loading: 'Cancelando pedido...',
+      success: 'Pedido cancelado com sucesso!',
+      error(error) {
+        return {
+          message: `Ocorreu um erro ao tentar cancelar o pedido. ${(error as Error).message}`,
+        }
+      },
+    })
+  }, [cancelOrderMutation, order])
+
   return (
     <TableRow>
       <TableCell>
@@ -42,7 +94,12 @@ export function OrdersTableRow({ order }: OrdersTableRowProps) {
         </Button>
       </TableCell>
       <TableCell>
-        <Button size="sm" variant="ghost">
+        <Button
+          size="sm"
+          variant="ghost"
+          disabled={!isStatusCanCancel}
+          onClick={handleCancelOrder}
+        >
           <X className="size-3.5" />
           <span>Cancelar</span>
         </Button>

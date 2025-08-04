@@ -1,10 +1,10 @@
 import { api } from '@/services/pizza-shop/api'
 
-type FetchManagerProfileResult = RestaurantManagerProfile
+export type FetchManagerProfileResult = RestaurantManagerProfile
 
-type FetchRestaurantProfileResult = RestaurantProfile
+export type FetchRestaurantProfileResult = RestaurantProfile
 
-type UpdateRestaurantProfilePayload = {
+export type UpdateRestaurantProfilePayload = {
   name: string
   description?: string
 }

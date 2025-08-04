@@ -1,6 +1,6 @@
 import { api } from '@/services/pizza-shop/api'
 
-type FetchPaginatedOrdersResult = {
+export type FetchPaginatedOrdersResult = {
   orders: Order[]
   meta: {
     pageIndex: number
@@ -9,16 +9,16 @@ type FetchPaginatedOrdersResult = {
   }
 }
 
-type FetchPaginatedOrdersPayload = {
+export type FetchPaginatedOrdersPayload = {
   pageIndex: number
   customerName?: string | null
   orderId?: string | null
   status: OrderStatus | 'any'
 }
 
-type FetchOrderDetailsPayload = Pick<Order, 'orderId'>
+export type FetchOrderDetailsPayload = Pick<Order, 'orderId'>
 
-type FetchOrderDetailsResult = Omit<
+export type FetchOrderDetailsResult = Omit<
   Order,
   'orderId' | 'customerName' | 'total'
 > & {
@@ -34,6 +34,8 @@ type FetchOrderDetailsResult = Omit<
     }
   }>
 }
+
+export type CancelOrderPayload = Pick<Order, 'orderId'>
 
 export const OrdersService = {
   async fetchPaginatedOrders({
@@ -57,5 +59,9 @@ export const OrdersService = {
   async fetchOrderDetails({ orderId }: FetchOrderDetailsPayload) {
     const result = await api.get<FetchOrderDetailsResult>(`/orders/${orderId}`)
     return result.data
+  },
+
+  async cancelOrder({ orderId }: CancelOrderPayload) {
+    await api.patch(`/orders/${orderId}/cancel`)
   },
 }

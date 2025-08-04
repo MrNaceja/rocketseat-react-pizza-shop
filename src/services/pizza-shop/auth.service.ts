@@ -1,10 +1,10 @@
 import { api } from '@/services/pizza-shop/api'
 
-type SignInPayload = {
+export type SignInPayload = {
   email: string
 }
 
-type SignUpPayload = {
+export type SignUpPayload = {
   restaurantName: string
   managerName: string
   email: string
