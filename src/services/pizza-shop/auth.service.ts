@@ -23,4 +23,7 @@ export const AuthService = {
       phone,
     })
   },
+  async signOut() {
+    await api.post('/sign-out')
+  },
 }

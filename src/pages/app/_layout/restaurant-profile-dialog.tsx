@@ -136,11 +136,20 @@ export function RestaurantProfileDialog({ children }: PropsWithChildren) {
           </div>
           <DialogFooter>
             <DialogClose asChild>
-              <Button size="sm" variant="ghost">
+              <Button
+                size="sm"
+                variant="ghost"
+                disabled={restaurantProfileForm.formState.isSubmitting}
+              >
                 Cancelar
               </Button>
             </DialogClose>
-            <Button size="sm" variant="default" type="submit">
+            <Button
+              size="sm"
+              variant="default"
+              type="submit"
+              disabled={restaurantProfileForm.formState.isSubmitting}
+            >
               Salvar
             </Button>
           </DialogFooter>

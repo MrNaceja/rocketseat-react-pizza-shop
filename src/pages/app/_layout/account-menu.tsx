@@ -1,5 +1,7 @@
 import { Building, LogOut } from 'lucide-react'
-import type { PropsWithChildren } from 'react'
+import { type PropsWithChildren, useCallback } from 'react'
+import { useNavigate } from 'react-router'
+import { toast } from 'sonner'
 
 import {
   DropdownMenu,
@@ -10,14 +12,35 @@ import {
   DropdownMenuTrigger,
 } from '@/components/dropdown-menu'
 import { Skeleton } from '@/components/skeleton'
+import { useAuth } from '@/hooks/use-auth'
 import { useManagerProfile } from '@/hooks/use-manager-profile'
 import {
   RestaurantProfileDialog,
   RestaurantProfileDialogTrigger,
-} from '@/pages/app/_layout/store-profile-dialog'
+} from '@/pages/app/_layout/restaurant-profile-dialog'
 
 export function AccountMenu({ children: trigger }: PropsWithChildren) {
   const { profile, isLoading: isLoadingManagerProfile } = useManagerProfile()
+  const { signOut } = useAuth()
+  const navigate = useNavigate()
+
+  const handleSignOut = useCallback(() => {
+    toast.promise(signOut, {
+      loading: 'Encerrando sessão...',
+      success() {
+        navigate('/sign-in', { replace: true })
+        return {
+          message: 'Sessão encerrada.',
+        }
+      },
+      error(error) {
+        return {
+          message: `Ocorreu um erro ao encerrar. ${(error as Error).message}`,
+        }
+      },
+    })
+  }, [signOut, navigate])
+
   return (
     <RestaurantProfileDialog>
       <DropdownMenu>
@@ -46,7 +69,7 @@ export function AccountMenu({ children: trigger }: PropsWithChildren) {
               <span>Perfil da Loja</span>
             </DropdownMenuItem>
           </RestaurantProfileDialogTrigger>
-          <DropdownMenuItem variant="destructive">
+          <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
             <LogOut className="text-destructive" />
             <span className="text-destructive">Sair</span>
           </DropdownMenuItem>

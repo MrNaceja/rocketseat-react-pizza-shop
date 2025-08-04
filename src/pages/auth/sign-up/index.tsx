@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { useHead } from '@unhead/react'
 import { useCallback, useEffect } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
@@ -11,7 +10,7 @@ import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Label } from '@/components/label'
 import { Separator } from '@/components/separator'
-import { AuthService } from '@/services/pizza-shop/auth.service'
+import { useAuth } from '@/hooks/use-auth'
 
 const signUpFormSchema = z4.object({
   restaurantName: z4.string().nonempty('Nome do restaurante é obrigatório.'),
@@ -27,9 +26,7 @@ export function SignUpPage() {
     title: 'Sign Up',
   })
 
-  const { mutateAsync: signUp } = useMutation({
-    mutationFn: AuthService.signUp,
-  })
+  const { signUp } = useAuth()
 
   const navigate = useNavigate()
 

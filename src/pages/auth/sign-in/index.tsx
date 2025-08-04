@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
 import { useHead } from '@unhead/react'
 import { useCallback } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
@@ -11,7 +10,7 @@ import { Button } from '@/components/button'
 import { Input } from '@/components/input'
 import { Label } from '@/components/label'
 import { Separator } from '@/components/separator'
-import { AuthService } from '@/services/pizza-shop/auth.service'
+import { useAuth } from '@/hooks/use-auth'
 
 const signInFormSchema = z4.object({
   email: z4.email('Email é obrigatório.'),
@@ -24,11 +23,9 @@ export function SignInPage() {
     title: 'Sign In',
   })
 
-  const [searchParams] = useSearchParams()
+  const { signIn } = useAuth()
 
-  const { mutateAsync: signIn } = useMutation({
-    mutationFn: AuthService.signIn,
-  })
+  const [searchParams] = useSearchParams()
 
   const signInForm = useForm<SignInForm>({
     resolver: zodResolver(signInFormSchema),
