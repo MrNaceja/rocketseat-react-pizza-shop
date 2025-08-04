@@ -44,9 +44,8 @@ export function RestaurantProfileDialog({ children }: PropsWithChildren) {
     },
   })
 
-  const updateRestaurantProfileMutation = useMutation({
-    mutationFn: RestaurantService.updateRestaurantProfile,
-    onSuccess(_, { name, description }) {
+  const updateRestaurantProfileCache = useCallback(
+    ({ name, description }: RestaurantProfileFormData) => {
       const restaurantProfileCached =
         queryClient.getQueryData<RestaurantProfile>(
           RESTAURANT_PROFILE_QUERY_KEY,
@@ -59,6 +58,34 @@ export function RestaurantProfileDialog({ children }: PropsWithChildren) {
           description,
         })
       }
+      return { restaurantProfileCached }
+    },
+    [queryClient],
+  )
+
+  const updateRestaurantProfileMutation = useMutation({
+    mutationFn: RestaurantService.updateRestaurantProfile,
+    onMutate({ name, description }) {
+      const { restaurantProfileCached } = updateRestaurantProfileCache({
+        // Optimistic UI
+        name,
+        description,
+      })
+
+      return {
+        previousRestaurantProfile: restaurantProfileCached,
+      }
+    },
+    onError(error, __, context) {
+      if (context?.previousRestaurantProfile) {
+        updateRestaurantProfileCache({
+          // Optimistic UI
+          name: context.previousRestaurantProfile.name,
+          description:
+            context.previousRestaurantProfile.description || undefined,
+        })
+      }
+      throw error
     },
   })
 
@@ -77,7 +104,7 @@ export function RestaurantProfileDialog({ children }: PropsWithChildren) {
         },
       )
     },
-    [],
+    [updateRestaurantProfileMutation],
   )
 
   return (
