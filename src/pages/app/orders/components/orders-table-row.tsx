@@ -1,68 +1,53 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowRight, Search, X } from 'lucide-react'
+import { ArrowRight, Check, Search, Truck, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
-import { Button } from '@/components/button'
+import { Button, type ButtonProps } from '@/components/button'
+import { Switch } from '@/components/switch'
 import { TableCell, TableRow } from '@/components/table'
+import { useOrderStatusMutation } from '@/hooks/use-order-status-mutation'
 import { ORDER_STATUS_CAN_CANCEL, OrderStatusEnum } from '@/lib/constants'
 import { Formatters } from '@/lib/formatters'
 import { OrderDetailsDialog } from '@/pages/app/orders/components/order-details-dialog'
 import { OrderStatusTag } from '@/pages/app/orders/components/order-status-tag'
-import {
-  type FetchPaginatedOrdersResult,
-  OrdersService,
-} from '@/services/pizza-shop/orders.service'
+import type { UpdateOrderStatusPayload } from '@/services/pizza-shop/orders.service'
+
+type ChangeStatusMutationAction = (props: {
+  loadingMessage: string
+  successMessage: string
+  status: UpdateOrderStatusPayload['status']
+}) => void
 
 interface OrdersTableRowProps {
   order: Order
 }
 export function OrdersTableRow({ order }: OrdersTableRowProps) {
-  const queryClient = useQueryClient()
   const [isDetailsDialogOpened, setIsDetailsDialogOpened] = useState(false)
 
   const isStatusCanCancel = ORDER_STATUS_CAN_CANCEL.includes(order.status)
 
-  const cancelOrderMutation = useMutation({
-    mutationFn: OrdersService.cancelOrder,
-    onSuccess() {
-      const paginatedOrdersCached =
-        queryClient.getQueriesData<FetchPaginatedOrdersResult>({
-          queryKey: ['paginated-orders'],
-        })
+  const orderStatusMutation = useOrderStatusMutation()
 
-      if (paginatedOrdersCached) {
-        paginatedOrdersCached.forEach(
-          ([paginatedOrdersCacheKey, paginatedOrdersCacheData]) => {
-            if (paginatedOrdersCacheData) {
-              queryClient.setQueryData(paginatedOrdersCacheKey, {
-                ...paginatedOrdersCacheData,
-                orders: paginatedOrdersCacheData.orders.map((orderCached) => ({
-                  ...orderCached,
-                  status:
-                    orderCached.orderId === order.orderId
-                      ? OrderStatusEnum.canceled
-                      : order.status,
-                })),
-              })
+  const handleChangeStatusAction = useCallback<ChangeStatusMutationAction>(
+    ({ loadingMessage, successMessage, status }) => {
+      toast.promise(
+        orderStatusMutation.mutateAsync({
+          orderId: order.orderId,
+          status,
+        }),
+        {
+          loading: loadingMessage,
+          success: successMessage,
+          error(error) {
+            return {
+              message: `Ocorreu um erro ao tentar alterar o status do pedido. ${(error as Error).message}`,
             }
           },
-        )
-      }
+        },
+      )
     },
-  })
-
-  const handleCancelOrder = useCallback(() => {
-    toast.promise(cancelOrderMutation.mutateAsync({ orderId: order.orderId }), {
-      loading: 'Cancelando pedido...',
-      success: 'Pedido cancelado com sucesso!',
-      error(error) {
-        return {
-          message: `Ocorreu um erro ao tentar cancelar o pedido. ${(error as Error).message}`,
-        }
-      },
-    })
-  }, [cancelOrderMutation, order])
+    [orderStatusMutation, order],
+  )
 
   return (
     <TableRow>
@@ -88,22 +73,99 @@ export function OrdersTableRow({ order }: OrdersTableRowProps) {
       <TableCell>{order.customerName}</TableCell>
       <TableCell>{Formatters.number.currency(order.total / 100)}</TableCell>
       <TableCell>
-        <Button size="sm" variant="outline">
-          <ArrowRight />
-          <span>Aprovar</span>
-        </Button>
+        <Switch<Exclude<OrderStatus, 'canceled'>>
+          value={order.status}
+          components={{
+            delivered: OrderStatusActionFinished,
+            pending: (
+              <OrderStatusActionApprove
+                disabled={orderStatusMutation.isPending}
+                onClick={() =>
+                  handleChangeStatusAction({
+                    status: OrderStatusEnum.processing,
+                    loadingMessage: 'Aprovando o pedido...',
+                    successMessage: 'Pedido aprovado com sucesso!',
+                  })
+                }
+              />
+            ),
+            delivering: (
+              <OrderStatusActionDelivered
+                disabled={orderStatusMutation.isPending}
+                onClick={() =>
+                  handleChangeStatusAction({
+                    status: OrderStatusEnum.delivered,
+                    loadingMessage: 'Finalizando o pedido...',
+                    successMessage: 'Pedido finalizado com sucesso!',
+                  })
+                }
+              />
+            ),
+            processing: (
+              <OrderStatusActionDeliver
+                disabled={orderStatusMutation.isPending}
+                onClick={() =>
+                  handleChangeStatusAction({
+                    status: OrderStatusEnum.delivering,
+                    loadingMessage: 'Enviando o pedido...',
+                    successMessage: 'Pedido enviado com sucesso!',
+                  })
+                }
+              />
+            ),
+          }}
+        />
       </TableCell>
       <TableCell>
         <Button
           size="sm"
           variant="ghost"
           disabled={!isStatusCanCancel}
-          onClick={handleCancelOrder}
+          onClick={() =>
+            handleChangeStatusAction({
+              status: OrderStatusEnum.canceled,
+              loadingMessage: 'Cancelando o pedido...',
+              successMessage: 'Pedido cancelado com sucesso!',
+            })
+          }
         >
           <X className="size-3.5" />
           <span>Cancelar</span>
         </Button>
       </TableCell>
     </TableRow>
+  )
+}
+
+function OrderStatusActionFinished(props: ButtonProps) {
+  return (
+    <Button size="sm" variant="ghost" {...props} disabled>
+      <Check />
+      <span>Finalizado</span>
+    </Button>
+  )
+}
+function OrderStatusActionApprove(props: ButtonProps) {
+  return (
+    <Button size="sm" variant="outline" {...props}>
+      <ArrowRight />
+      <span>Aprovar</span>
+    </Button>
+  )
+}
+function OrderStatusActionDeliver(props: ButtonProps) {
+  return (
+    <Button size="sm" variant="outline" {...props}>
+      <Truck />
+      <span>Entregar</span>
+    </Button>
+  )
+}
+function OrderStatusActionDelivered(props: ButtonProps) {
+  return (
+    <Button size="sm" variant="outline" {...props}>
+      <Check />
+      <span>Entregue</span>
+    </Button>
   )
 }

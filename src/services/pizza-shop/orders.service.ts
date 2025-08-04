@@ -35,7 +35,10 @@ export type FetchOrderDetailsResult = Omit<
   }>
 }
 
-export type CancelOrderPayload = Pick<Order, 'orderId'>
+export type UpdateOrderStatusPayload = {
+  orderId: Order['orderId']
+  status: Exclude<OrderStatus, 'pending'>
+}
 
 export const OrdersService = {
   async fetchPaginatedOrders({
@@ -61,7 +64,18 @@ export const OrdersService = {
     return result.data
   },
 
-  async cancelOrder({ orderId }: CancelOrderPayload) {
-    await api.patch(`/orders/${orderId}/cancel`)
+  async updateOrderStatus({ orderId, status }: UpdateOrderStatusPayload) {
+    const updateOrderStatusEndpointMap: Record<
+      UpdateOrderStatusPayload['status'],
+      string
+    > = {
+      canceled: 'cancel',
+      processing: 'approve',
+      delivered: 'deliver',
+      delivering: 'dispatch',
+    }
+    await api.patch(
+      `/orders/${orderId}/${updateOrderStatusEndpointMap[status]}`,
+    )
   },
 }
