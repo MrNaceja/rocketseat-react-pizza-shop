@@ -16,6 +16,25 @@ type FetchPaginatedOrdersPayload = {
   status: OrderStatus | 'any'
 }
 
+type FetchOrderDetailsPayload = Pick<Order, 'orderId'>
+
+type FetchOrderDetailsResult = Omit<
+  Order,
+  'orderId' | 'customerName' | 'total'
+> & {
+  id: Order['orderId']
+  totalInCents: number
+  customer: Pick<RestaurantManagerProfile, 'name' | 'phone' | 'email'>
+  orderItems: Array<{
+    id: string
+    priceInCents: number
+    quantity: number
+    product: {
+      name: string
+    }
+  }>
+}
+
 export const OrdersService = {
   async fetchPaginatedOrders({
     pageIndex,
@@ -32,6 +51,11 @@ export const OrdersService = {
       },
     })
 
+    return result.data
+  },
+
+  async fetchOrderDetails({ orderId }: FetchOrderDetailsPayload) {
+    const result = await api.get<FetchOrderDetailsResult>(`/orders/${orderId}`)
     return result.data
   },
 }

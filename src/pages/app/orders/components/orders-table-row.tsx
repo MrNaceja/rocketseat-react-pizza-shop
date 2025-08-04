@@ -1,4 +1,5 @@
 import { ArrowRight, Search, X } from 'lucide-react'
+import { useState } from 'react'
 
 import { Button } from '@/components/button'
 import { TableCell, TableRow } from '@/components/table'
@@ -10,10 +11,15 @@ interface OrdersTableRowProps {
   order: Order
 }
 export function OrdersTableRow({ order }: OrdersTableRowProps) {
+  const [isDetailsDialogOpened, setIsDetailsDialogOpened] = useState(false)
   return (
     <TableRow>
       <TableCell>
-        <OrderDetailsDialog>
+        <OrderDetailsDialog
+          orderId={order.orderId}
+          open={isDetailsDialogOpened}
+          onOpenChange={setIsDetailsDialogOpened}
+        >
           <Button size="icon" variant="outline">
             <Search className="size-3.5" />
             <span className="sr-only">Detalhes do Pedido</span>
@@ -28,7 +34,7 @@ export function OrdersTableRow({ order }: OrdersTableRowProps) {
         <OrderStatusTag status={order.status} />
       </TableCell>
       <TableCell>{order.customerName}</TableCell>
-      <TableCell>{Formatters.number.currency(order.total)}</TableCell>
+      <TableCell>{Formatters.number.currency(order.total / 100)}</TableCell>
       <TableCell>
         <Button size="sm" variant="outline">
           <ArrowRight />
