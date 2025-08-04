@@ -1,5 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { useHead } from '@unhead/react'
+import { useCallback } from 'react'
+import { useSearchParams } from 'react-router'
+import z4 from 'zod/v4'
 
 import { PaginationControl } from '@/components/pagination-control'
 import {
@@ -18,10 +21,30 @@ export function OrdersPage() {
     title: 'Pedidos',
   })
 
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const pageIndex = z4.coerce
+    .number()
+    .transform((page) => --page)
+    .parse(searchParams.get('page') || '1')
+
   const { data: paginatedOrders } = useQuery({
-    queryKey: ['paginated-orders'],
-    queryFn: OrdersService.fetchPaginatedOrders,
+    queryKey: ['paginated-orders', pageIndex],
+    queryFn() {
+      return OrdersService.fetchPaginatedOrders({ pageIndex })
+    },
   })
+
+  const handlePaginate = useCallback(
+    (toPage: number) => {
+      setSearchParams((state) => {
+        state.set('page', toPage.toString())
+
+        return state
+      })
+    },
+    [setSearchParams],
+  )
 
   return (
     <div className="flex flex-col gap-6 p-6">
@@ -59,9 +82,10 @@ export function OrdersPage() {
           </Table>
           <footer className="border-t p-3">
             <PaginationControl
-              currentPageIndex={0}
-              recordsTotal={10}
-              recorsPerPage={5}
+              onPageChange={handlePaginate}
+              currentPageIndex={pageIndex}
+              recordsTotal={paginatedOrders?.meta.totalCount || 0}
+              recorsPerPage={paginatedOrders?.meta.perPage || 0}
             />
           </footer>
         </article>

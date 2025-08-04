@@ -11,14 +11,19 @@ interface PaginationControlProps {
   currentPageIndex: number
   recordsTotal: number
   recorsPerPage: number
+  onPageChange: (toPage: number) => Promise<void> | void
 }
 export function PaginationControl({
   currentPageIndex,
   recordsTotal,
   recorsPerPage,
+  onPageChange,
 }: PaginationControlProps) {
   const totalPages = Math.ceil(recordsTotal / recorsPerPage) || 1
   const currentPage = currentPageIndex + 1
+
+  const isFirstPage = currentPage === 1
+  const isLastPage = currentPage === totalPages
 
   return (
     <div className="flex items-center justify-between gap-2">
@@ -31,19 +36,39 @@ export function PaginationControl({
           Página {currentPage} de {totalPages}
         </span>
         <aside className="flex items-center gap-1">
-          <Button size="icon" variant="outline">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => onPageChange(1)}
+            disabled={isFirstPage}
+          >
             <ChevronsLeft />
             <span className="sr-only">Primeira página</span>
           </Button>
-          <Button size="icon" variant="outline">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => onPageChange(currentPage - 1)}
+            disabled={isFirstPage}
+          >
             <ChevronLeft />
             <span className="sr-only">Página anterior</span>
           </Button>
-          <Button size="icon" variant="outline">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => onPageChange(currentPage + 1)}
+            disabled={isLastPage}
+          >
             <ChevronRight />
             <span className="sr-only">Próxima página</span>
           </Button>
-          <Button size="icon" variant="outline">
+          <Button
+            size="icon"
+            variant="outline"
+            onClick={() => onPageChange(totalPages)}
+            disabled={isLastPage}
+          >
             <ChevronsRight />
             <span className="sr-only">Última página</span>
           </Button>

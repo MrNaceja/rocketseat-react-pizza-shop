@@ -9,11 +9,15 @@ type FetchPaginatedOrdersResult = {
   }
 }
 
+type FetchPaginatedOrdersPayload = {
+  pageIndex: number
+}
+
 export const OrdersService = {
-  async fetchPaginatedOrders() {
+  async fetchPaginatedOrders({ pageIndex }: FetchPaginatedOrdersPayload) {
     const result = await api.get<FetchPaginatedOrdersResult>('/orders', {
       params: {
-        pageIndex: 0,
+        pageIndex,
       },
     })
 
