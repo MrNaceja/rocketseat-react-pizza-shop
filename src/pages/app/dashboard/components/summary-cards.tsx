@@ -14,26 +14,26 @@ import { cn } from '@/lib/utils'
 import { MetricsService } from '@/services/pizza-shop/metrics.service'
 
 export function SummaryCards() {
-  const { data: totalAmountRevenueInMonthQuery } = useQuery({
-    queryKey: ['total-amount-revenue-month'],
+  const { data: totalAmountRevenueInMonth } = useQuery({
+    queryKey: ['metrics', 'total-amount-revenue-month'],
     queryFn: MetricsService.fetchTotalRevenueInMonth,
   })
-  const { data: amountCanceledInMonthQuery } = useQuery({
-    queryKey: ['amount-canceled-month'],
+  const { data: amountCanceledInMonth } = useQuery({
+    queryKey: ['metrics', 'amount-canceled-month'],
     queryFn: MetricsService.fetchAmountCanceledInMonth,
   })
   const { data: amountOrdersInDay } = useQuery({
-    queryKey: ['amount-orders-day'],
+    queryKey: ['metrics', 'amount-orders-day'],
     queryFn: MetricsService.fetchAmountOrdersInDay,
   })
   const { data: amountOrdersInMonth } = useQuery({
-    queryKey: ['amount-orders-month'],
+    queryKey: ['metrics', 'amount-orders-month'],
     queryFn: MetricsService.fetchAmountOrdersInMonth,
   })
 
   return (
     <header className="grid grid-cols-4 gap-6">
-      {totalAmountRevenueInMonthQuery && (
+      {totalAmountRevenueInMonth && (
         <Card>
           <CardHeader>
             <span>Receita total (mês)</span>
@@ -44,19 +44,19 @@ export function SummaryCards() {
           <CardContent className="flex flex-col gap-3">
             <CardTitle className="text-3xl">
               {Formatters.number.currency(
-                totalAmountRevenueInMonthQuery.receipt / 100,
+                totalAmountRevenueInMonth.receipt / 100,
               )}
             </CardTitle>
             <CardDescription>
               <strong
                 className={cn({
                   'text-emerald-500':
-                    totalAmountRevenueInMonthQuery.diffFromLastMonth > 1,
+                    totalAmountRevenueInMonth.diffFromLastMonth > 1,
                   'text-destructive':
-                    totalAmountRevenueInMonthQuery.diffFromLastMonth < 0,
+                    totalAmountRevenueInMonth.diffFromLastMonth < 0,
                 })}
               >
-                {totalAmountRevenueInMonthQuery.diffFromLastMonth}%
+                {totalAmountRevenueInMonth.diffFromLastMonth}%
               </strong>{' '}
               em relação ao mês passado
             </CardDescription>
@@ -115,7 +115,7 @@ export function SummaryCards() {
           </CardContent>
         </Card>
       )}
-      {amountCanceledInMonthQuery && (
+      {amountCanceledInMonth && (
         <Card>
           <CardHeader>
             <span>Cancelamentos (mês)</span>
@@ -125,18 +125,18 @@ export function SummaryCards() {
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             <CardTitle className="text-3xl">
-              {amountCanceledInMonthQuery.amount}
+              {amountCanceledInMonth.amount}
             </CardTitle>
             <CardDescription>
               <strong
                 className={cn({
                   'text-destructive':
-                    amountCanceledInMonthQuery.diffFromLastMonth > 1,
+                    amountCanceledInMonth.diffFromLastMonth > 1,
                   'text-emerald-500':
-                    amountCanceledInMonthQuery.diffFromLastMonth < 0,
+                    amountCanceledInMonth.diffFromLastMonth < 0,
                 })}
               >
-                {amountCanceledInMonthQuery.diffFromLastMonth}%
+                {amountCanceledInMonth.diffFromLastMonth}%
               </strong>{' '}
               em relação ao mês passado
             </CardDescription>

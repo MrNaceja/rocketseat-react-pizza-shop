@@ -1,34 +1,39 @@
 import { api } from '@/services/pizza-shop/api'
 
-export type FetchAmountOrdersInMonth = {
+export type FetchAmountOrdersInMonthResult = {
   amount: number
   diffFromLastMonth: number
 }
-export type FetchAmountOrdersInDay = {
+export type FetchAmountOrdersInDayResult = {
   amount: number
   diffFromYesterday: number
 }
 
-export type FetchTotalRevenueInMonth = {
+export type FetchTotalRevenueInMonthResult = {
   receipt: number
   diffFromLastMonth: number
 }
 
-export type FetchAmountCanceledInMonth = {
+export type FetchAmountCanceledInMonthResult = {
   amount: number
   diffFromLastMonth: number
 }
 
+export type FetchPopularProductsResult = {
+  product: string | null
+  amount: number
+}[]
+
 export const MetricsService = {
   async fetchAmountOrdersInMonth() {
-    const result = await api.get<FetchAmountOrdersInMonth>(
+    const result = await api.get<FetchAmountOrdersInMonthResult>(
       '/metrics/month-orders-amount',
     )
 
     return result.data
   },
   async fetchAmountOrdersInDay() {
-    const result = await api.get<FetchAmountOrdersInDay>(
+    const result = await api.get<FetchAmountOrdersInDayResult>(
       '/metrics/day-orders-amount',
     )
 
@@ -36,15 +41,23 @@ export const MetricsService = {
   },
 
   async fetchTotalRevenueInMonth() {
-    const result = await api.get<FetchTotalRevenueInMonth>(
+    const result = await api.get<FetchTotalRevenueInMonthResult>(
       '/metrics/month-receipt',
     )
     return result.data
   },
   async fetchAmountCanceledInMonth() {
-    const result = await api.get<FetchAmountCanceledInMonth>(
+    const result = await api.get<FetchAmountCanceledInMonthResult>(
       '/metrics/month-canceled-orders-amount',
     )
+    return result.data
+  },
+
+  async fetchPopularProducts() {
+    const result = await api.get<FetchPopularProductsResult>(
+      '/metrics/popular-products',
+    )
+
     return result.data
   },
 }

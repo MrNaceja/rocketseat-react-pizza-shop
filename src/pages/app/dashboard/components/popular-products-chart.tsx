@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { Cell, Pie, PieChart } from 'recharts'
 
 import {
@@ -8,43 +9,21 @@ import {
   CardTitle,
 } from '@/components/card'
 import { type ChartConfig, ChartContainer } from '@/components/chart'
-
-type PopularProductsChartData = {
-  productName: string
-  amountSelled: number
-}
-
-const chartData: PopularProductsChartData[] = [
-  {
-    productName: 'Pizza pepperoni acebolada',
-    amountSelled: 24,
-  },
-  {
-    productName: 'Pizza calabresa',
-    amountSelled: 34,
-  },
-  {
-    productName: 'Pizza 4 queijos',
-    amountSelled: 12,
-  },
-  {
-    productName: 'Pizza portuguesa',
-    amountSelled: 67,
-  },
-  {
-    productName: 'Pizza ao molho barbecue',
-    amountSelled: 39,
-  },
-]
+import { MetricsService } from '@/services/pizza-shop/metrics.service'
 
 const chartConfig = {
-  amountSelled: {
+  amount: {
     label: 'Qtd. Vendida',
     color: 'var(--chart-3)',
   },
 } satisfies ChartConfig
 
 export function PopularProductsChart() {
+  const { data: popularProducts } = useQuery({
+    queryKey: ['metrics', 'popular-products'],
+    queryFn: MetricsService.fetchPopularProducts,
+  })
+
   return (
     <Card>
       <CardHeader>
@@ -55,24 +34,32 @@ export function PopularProductsChart() {
         <ChartContainer config={chartConfig} className="h-96 w-full">
           <PieChart accessibilityLayer>
             <Pie
-              data={chartData}
-              dataKey="amountSelled"
-              nameKey="productName"
+              data={popularProducts}
+              dataKey="amount"
+              nameKey="product"
               innerRadius={100}
               strokeWidth={8}
               stroke="var(--card)"
               labelLine={false}
-              label={({ payload: { productName }, ...props }) => {
+              label={({ payload: { product }, ...props }) => {
                 return (
-                  <text {...props} className="fill-muted-foreground text-xs">
-                    {String(productName).length > 16
-                      ? String(productName).substring(0, 16).concat('...')
-                      : productName}
+                  <text
+                    cx={props.cx}
+                    cy={props.cy}
+                    x={props.x}
+                    y={props.y}
+                    textAnchor={props.textAnchor}
+                    dominantBaseline={props.dominantBaseline}
+                    className="fill-muted-foreground text-xs"
+                  >
+                    {String(product).length > 16
+                      ? String(product).substring(0, 16).concat('...')
+                      : product}
                   </text>
                 )
               }}
             >
-              {chartData.map((_, idx) => (
+              {popularProducts?.map((_, idx) => (
                 <Cell
                   key={`cell-${idx}`}
                   fill={`var(--chart-${++idx})`}
