@@ -1,4 +1,4 @@
-import { api } from '@/services/pizza-shop/api'
+import { api, PizzaShopServiceError } from '@/services/pizza-shop/api'
 
 export type SignInPayload = {
   email: string
@@ -25,5 +25,22 @@ export const AuthService = {
   },
   async signOut() {
     await api.post('/sign-out')
+  },
+
+  withUnauthorizedInterceptor(
+    interceptor: (error: PizzaShopServiceError) => void,
+  ) {
+    const unauthorizedRequestInterceptorId = api.interceptors.response.use(
+      (res) => res,
+      (error: PizzaShopServiceError) => {
+        if (error.status === 401) {
+          interceptor(error)
+        }
+        return error
+      },
+    )
+
+    return () =>
+      api.interceptors.response.eject(unauthorizedRequestInterceptorId)
   },
 }

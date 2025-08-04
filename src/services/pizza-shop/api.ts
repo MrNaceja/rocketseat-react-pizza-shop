@@ -8,7 +8,7 @@ export const api = axios.create({
   withCredentials: true,
 })
 
-type PizzaShopApiError = {
+export type PizzaShopApiError = {
   code: 'UNAUTHORIZED' | string
   message: string
 }
