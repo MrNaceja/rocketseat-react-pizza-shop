@@ -1,3 +1,5 @@
+import type { DateRange } from 'react-day-picker'
+
 import { api } from '@/services/pizza-shop/api'
 
 export type FetchAmountOrdersInMonthResult = {
@@ -23,6 +25,13 @@ export type FetchPopularProductsResult = {
   product: string | null
   amount: number
 }[]
+
+export type FetchDailyRevenueInPeriodResult = {
+  date: string
+  receipt: number
+}[]
+
+export type FetchDailyRevenueInPeriodPayload = Partial<DateRange>
 
 export const MetricsService = {
   async fetchAmountOrdersInMonth() {
@@ -56,6 +65,23 @@ export const MetricsService = {
   async fetchPopularProducts() {
     const result = await api.get<FetchPopularProductsResult>(
       '/metrics/popular-products',
+    )
+
+    return result.data
+  },
+
+  async fetchDailyRevenueInPeriod({
+    from,
+    to,
+  }: FetchDailyRevenueInPeriodPayload) {
+    const result = await api.get<FetchDailyRevenueInPeriodResult>(
+      '/metrics/daily-receipt-in-period',
+      {
+        params: {
+          from,
+          to,
+        },
+      },
     )
 
     return result.data
