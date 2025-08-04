@@ -11,13 +11,6 @@ import {
   SelectValue,
 } from '@/components/select'
 
-type OrderStatus =
-  | 'pending'
-  | 'canceled'
-  | 'processing'
-  | 'delivering'
-  | 'delivered'
-
 type StatusFilterOption = {
   value: OrderStatus | 'any'
   label: string

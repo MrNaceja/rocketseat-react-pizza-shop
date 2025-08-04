@@ -2,9 +2,14 @@ import { ArrowRight, Search, X } from 'lucide-react'
 
 import { Button } from '@/components/button'
 import { TableCell, TableRow } from '@/components/table'
+import { Formatters } from '@/lib/formatters'
 import { OrderDetailsDialog } from '@/pages/app/orders/components/order-details-dialog'
+import { OrderStatusTag } from '@/pages/app/orders/components/order-status-tag'
 
-export function OrdersTableRow() {
+interface OrdersTableRowProps {
+  order: Order
+}
+export function OrdersTableRow({ order }: OrdersTableRowProps) {
   return (
     <TableRow>
       <TableCell>
@@ -15,16 +20,15 @@ export function OrdersTableRow() {
           </Button>
         </OrderDetailsDialog>
       </TableCell>
-      <TableCell>sdalfhsdoufhsodlfjçsdlfksdf</TableCell>
-      <TableCell>há 15 minutos</TableCell>
+      <TableCell>{order.orderId}</TableCell>
       <TableCell>
-        <div className="flex items-center gap-2">
-          <span className="bg-muted inline-block size-2.5 rounded-full" />
-          <span>Pendente</span>
-        </div>
+        {Formatters.temporal.distanceToNow(order.createdAt)}
       </TableCell>
-      <TableCell>Eduardo Narcizo Neto Toriani</TableCell>
-      <TableCell>R$ 149.90</TableCell>
+      <TableCell>
+        <OrderStatusTag status={order.status} />
+      </TableCell>
+      <TableCell>{order.customerName}</TableCell>
+      <TableCell>{Formatters.number.currency(order.total)}</TableCell>
       <TableCell>
         <Button size="sm" variant="outline">
           <ArrowRight />

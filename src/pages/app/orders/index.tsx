@@ -1,3 +1,4 @@
+import { useQuery } from '@tanstack/react-query'
 import { useHead } from '@unhead/react'
 
 import { PaginationControl } from '@/components/pagination-control'
@@ -10,10 +11,16 @@ import {
 } from '@/components/table'
 import { OrdersFilters } from '@/pages/app/orders/components/orders-filters'
 import { OrdersTableRow } from '@/pages/app/orders/components/orders-table-row'
+import { OrdersService } from '@/services/pizza-shop/orders.service'
 
 export function OrdersPage() {
   useHead({
     title: 'Pedidos',
+  })
+
+  const { data: paginatedOrders } = useQuery({
+    queryKey: ['paginated-orders'],
+    queryFn: OrdersService.fetchPaginatedOrders,
   })
 
   return (
@@ -45,8 +52,8 @@ export function OrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {Array.from({ length: 5 }).map((_, idx) => (
-                <OrdersTableRow key={idx} />
+              {paginatedOrders?.orders.map((order) => (
+                <OrdersTableRow key={order.orderId} order={order} />
               ))}
             </TableBody>
           </Table>
