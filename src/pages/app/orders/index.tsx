@@ -28,10 +28,25 @@ export function OrdersPage() {
     .transform((page) => --page)
     .parse(searchParams.get('page') || '1')
 
+  const filterStatus = (searchParams.get('status') as OrderStatus) || 'any'
+  const filterOrderId = searchParams.get('orderId')
+  const filterCustomerName = searchParams.get('customerName')
+
   const { data: paginatedOrders } = useQuery({
-    queryKey: ['paginated-orders', pageIndex],
+    queryKey: [
+      'paginated-orders',
+      pageIndex,
+      filterStatus,
+      filterOrderId,
+      filterCustomerName,
+    ],
     queryFn() {
-      return OrdersService.fetchPaginatedOrders({ pageIndex })
+      return OrdersService.fetchPaginatedOrders({
+        pageIndex,
+        customerName: filterCustomerName,
+        orderId: filterOrderId,
+        status: filterStatus,
+      })
     },
   })
 
@@ -39,7 +54,6 @@ export function OrdersPage() {
     (toPage: number) => {
       setSearchParams((state) => {
         state.set('page', toPage.toString())
-
         return state
       })
     },
