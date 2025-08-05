@@ -34,7 +34,7 @@ api.interceptors.response.use(
 
 if (env.VITE_PIZZA_SHOP_API_DELAY) {
   api.interceptors.request.use(async (config) => {
-    await delay(env.VITE_PIZZA_SHOP_API_DELAY)
+    await delay(Math.round(Math.random() * env.VITE_PIZZA_SHOP_API_DELAY))
     return config
   })
 }
