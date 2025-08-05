@@ -22,6 +22,7 @@ import {
   TableRow,
 } from '@/components/table'
 import { Formatters } from '@/lib/formatters'
+import { OrderDetailsDialogSkeleton } from '@/pages/app/orders/components/order-details-dialog-skeleton'
 import { OrderStatusTag } from '@/pages/app/orders/components/order-status-tag'
 import { OrdersService } from '@/services/pizza-shop/orders.service'
 
@@ -48,7 +49,7 @@ export function OrderDetailsDialog({
           <DialogDescription>Detalhes do pedido</DialogDescription>
           <DialogTitle className="uppercase">{orderId}</DialogTitle>
         </DialogHeader>
-        {orderDetails && (
+        {orderDetails ? (
           <>
             <Table>
               <TableBody>
@@ -136,6 +137,8 @@ export function OrderDetailsDialog({
               </TableFooter>
             </Table>
           </>
+        ) : (
+          <OrderDetailsDialogSkeleton />
         )}
       </DialogContent>
     </Dialog>
