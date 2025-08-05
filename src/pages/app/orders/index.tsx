@@ -14,6 +14,7 @@ import {
 } from '@/components/table'
 import { OrdersFilters } from '@/pages/app/orders/components/orders-filters'
 import { OrdersTableRow } from '@/pages/app/orders/components/orders-table-row'
+import { OrdersTableRowSkeleton } from '@/pages/app/orders/components/orders-table-row-skeleton'
 import { OrdersService } from '@/services/pizza-shop/orders.service'
 
 export function OrdersPage() {
@@ -89,9 +90,13 @@ export function OrdersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedOrders?.orders.map((order) => (
-                <OrdersTableRow key={order.orderId} order={order} />
-              ))}
+              {!paginatedOrders
+                ? Array.from({ length: 10 }).map((_, idx) => (
+                    <OrdersTableRowSkeleton key={idx} />
+                  ))
+                : paginatedOrders.orders.map((order) => (
+                    <OrdersTableRow key={order.orderId} order={order} />
+                  ))}
             </TableBody>
           </Table>
           <footer className="border-t p-3">
