@@ -15,6 +15,7 @@ import {
 import { type ChartConfig, ChartContainer } from '@/components/chart'
 import { DateRangePicker } from '@/components/data-range-picker'
 import { Label } from '@/components/label'
+import { Loader } from '@/components/loader'
 import { MetricsService } from '@/services/pizza-shop/metrics.service'
 
 const chartConfig = {
@@ -35,14 +36,15 @@ export function RevenuePeriodChart() {
     to: today,
   })
 
-  const { data: dailyRevenueInPeriod } = useQuery({
-    queryKey: ['metrics', 'daily-revenue-period', period],
-    queryFn: () =>
-      MetricsService.fetchDailyRevenueInPeriod({
-        from: period?.from,
-        to: period?.to,
-      }),
-  })
+  const { data: dailyRevenueInPeriod, isLoading: isLoadingDailyRevenue } =
+    useQuery({
+      queryKey: ['metrics', 'daily-revenue-period', period],
+      queryFn: () =>
+        MetricsService.fetchDailyRevenueInPeriod({
+          from: period?.from,
+          to: period?.to,
+        }),
+    })
 
   const chartData = useMemo(() => {
     return dailyRevenueInPeriod?.map((revenue) => ({
@@ -62,29 +64,33 @@ export function RevenuePeriodChart() {
         </CardAction>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-96 w-full">
-          <LineChart data={chartData} accessibilityLayer>
-            <CartesianGrid vertical={false} />
-            <Line
-              type="linear"
-              dataKey="receipt"
-              fill="var(--color-receipt)"
-              stroke="var(--color-receipt)"
-            />
-            <YAxis
-              axisLine={false}
-              tickLine={false}
-              dx={12}
-              tickFormatter={(value: number) =>
-                value.toLocaleString('pt-BR', {
-                  style: 'currency',
-                  currency: 'BRL',
-                })
-              }
-            />
-            <XAxis dataKey="date" tickLine={false} axisLine={false} dy={16} />
-          </LineChart>
-        </ChartContainer>
+        {isLoadingDailyRevenue ? (
+          <Loader className="grid h-96 place-items-center" />
+        ) : (
+          <ChartContainer config={chartConfig} className="h-96 w-full">
+            <LineChart data={chartData} accessibilityLayer>
+              <CartesianGrid vertical={false} />
+              <Line
+                type="linear"
+                dataKey="receipt"
+                fill="var(--color-receipt)"
+                stroke="var(--color-receipt)"
+              />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                dx={12}
+                tickFormatter={(value: number) =>
+                  value.toLocaleString('pt-BR', {
+                    style: 'currency',
+                    currency: 'BRL',
+                  })
+                }
+              />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} dy={16} />
+            </LineChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )

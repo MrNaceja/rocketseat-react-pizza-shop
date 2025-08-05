@@ -9,6 +9,7 @@ import {
   CardTitle,
 } from '@/components/card'
 import { type ChartConfig, ChartContainer } from '@/components/chart'
+import { Loader } from '@/components/loader'
 import { MetricsService } from '@/services/pizza-shop/metrics.service'
 
 const chartConfig = {
@@ -19,10 +20,11 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function PopularProductsChart() {
-  const { data: popularProducts } = useQuery({
-    queryKey: ['metrics', 'popular-products'],
-    queryFn: MetricsService.fetchPopularProducts,
-  })
+  const { data: popularProducts, isLoading: isLoadingPopularProducts } =
+    useQuery({
+      queryKey: ['metrics', 'popular-products'],
+      queryFn: MetricsService.fetchPopularProducts,
+    })
 
   return (
     <Card>
@@ -31,44 +33,48 @@ export function PopularProductsChart() {
         <CardDescription>Produtos mais vendidos</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-96 w-full">
-          <PieChart accessibilityLayer>
-            <Pie
-              data={popularProducts}
-              dataKey="amount"
-              nameKey="product"
-              innerRadius={100}
-              strokeWidth={8}
-              stroke="var(--card)"
-              labelLine={false}
-              label={({ payload: { product }, ...props }) => {
-                return (
-                  <text
-                    cx={props.cx}
-                    cy={props.cy}
-                    x={props.x}
-                    y={props.y}
-                    textAnchor={props.textAnchor}
-                    dominantBaseline={props.dominantBaseline}
-                    className="fill-muted-foreground text-xs"
-                  >
-                    {String(product).length > 16
-                      ? String(product).substring(0, 16).concat('...')
-                      : product}
-                  </text>
-                )
-              }}
-            >
-              {popularProducts?.map((_, idx) => (
-                <Cell
-                  key={`cell-${idx}`}
-                  fill={`var(--chart-${++idx})`}
-                  className="hover:opacity-75"
-                />
-              ))}
-            </Pie>
-          </PieChart>
-        </ChartContainer>
+        {isLoadingPopularProducts ? (
+          <Loader className="grid h-96 place-items-center" />
+        ) : (
+          <ChartContainer config={chartConfig} className="h-96 w-full">
+            <PieChart accessibilityLayer>
+              <Pie
+                data={popularProducts}
+                dataKey="amount"
+                nameKey="product"
+                innerRadius={100}
+                strokeWidth={8}
+                stroke="var(--card)"
+                labelLine={false}
+                label={({ payload: { product }, ...props }) => {
+                  return (
+                    <text
+                      cx={props.cx}
+                      cy={props.cy}
+                      x={props.x}
+                      y={props.y}
+                      textAnchor={props.textAnchor}
+                      dominantBaseline={props.dominantBaseline}
+                      className="fill-muted-foreground text-xs"
+                    >
+                      {String(product).length > 16
+                        ? String(product).substring(0, 16).concat('...')
+                        : product}
+                    </text>
+                  )
+                }}
+              >
+                {popularProducts?.map((_, idx) => (
+                  <Cell
+                    key={`cell-${idx}`}
+                    fill={`var(--chart-${++idx})`}
+                    className="hover:opacity-75"
+                  />
+                ))}
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+        )}
       </CardContent>
     </Card>
   )
