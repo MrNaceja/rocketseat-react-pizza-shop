@@ -4,9 +4,19 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 
 import { App } from '@/app'
+import { env } from "@/env"
+import { mockWorker } from "@/services/pizza-shop/mock"
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <App />
-  </StrictMode>,
-)
+(async () => {
+
+  if ( env.MODE === 'mock' ) {
+    await mockWorker.start()
+  }
+
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <App />
+    </StrictMode>,
+  )
+  
+})()
